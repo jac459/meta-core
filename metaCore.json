@@ -1,124 +1,223 @@
  
-{  "name":"metaCore",
+{   "name":"metaCore",
     "manufacturer":"JAC459",
-    "type":"AVRECEIVER",
-    "version":2,
+    "type":"MUSICPLAYER",
+    "version":3,
     "variables":{
-      "ToInitiate":false
+        "ToInitiate":false
     },
     "discover":{
-        "welcomeheadertext":"meta-core",
-        "welcomedescription":"Driver to control your meta platform\nby JAC459",
-        "command":{"type":"static", "command":"{\"\":\"\"}", "queryresult":"$.*"}        
+        "welcomeheadertext":"metaCore",
+        "welcomedescription":"Core Driver to manage your meta platform \n by JAC459",
+        "command":{"type":"static", "command":".", "queryresult":"$.*"}        
     },
     "template":{
-        "dynamicname":"DYNAMIK_INST_START Meta-Core Driver DYNAMIK_INST_END",
-        "dynamicid":"DYNAMIK_INST_START Meta-Core DYNAMIK_INST_END",
-
-    "labels":{
-        "CurrentStatus" : {"label":".", "actionlisten":"MyStatus", "listen":"MyState"}
-    },
+    "dynamicname":"DYNAMIK_INST_START metaCore DYNAMIK_INST_END",
+    "dynamicid":  "DYNAMIK_INST_START metaCore DYNAMIK_INST_END",
     "variables":{
-      "Option":"1",
-        "MyStatus":"",
-        "Manifest":"https://raw.githubusercontent.com/jac459/meta/master/drivers.manifest",
-        "LibraryDrivers":"",
-        "LibraryDataStore":"",
-        "ActiveDrivers":"",
+        "Manifest":   "https://raw.githubusercontent.com/jac459/meta/master/drivers.manifest",
+        "IconBaseUrl":"https://raw.githubusercontent.com/jac459/meta-core/main/pics",
+        "ActivatedLib":"./active",
+        "CoreLibrary": "./library",
+        "LibraryDrivers":"[]",
+        "LibraryDataStore":"[]",
+        "ActiveDrivers":"[]",
+        "LocalLibraryDrivers":"[]",
         "CurrentDriver":"",
+        "IsUserDefined":"",
         "RoomKey":"",
         "DeviceKey":"",
-        "CurrentNetworkDevice":"",
-        "ActivatedName":"",
-        "ActivatedLib":"./active",
-        "LibraryName":"",
-        "UserLibrary":"./library",
-        "CoreLibrary":"./library",
         "TriggerKey":"",
-        "DriverName": "",
-        "DriverLocation":"",
-        "DriverIcon":"",
-        "DriverOrigin":""
+        "CurrentNetworkDevice":""
     },
-
+    "persistedvariables":{
+        "LastLibraryUpdate":"So far Library not updated successfully."
+    },
     "buttons":{          
-        "POWER ON": {"type":"static", "command":"","queryresult": "", "evaldo":[{"test":true,"then":"__SETUP"}]},
-        "__SETUP0": {"type":"cli", "command":"DYNAMIK let Manif = \"$Manifest\".split(\"/\")[\"$Manifest\".split(\"/\").length-1]; \"wget $Manifest -O \" + Manif + \" | cat \" + Manif","queryresult": "", "evalwrite":[{"variable":"LibraryDrivers", "value":"DYNAMIK \"$Result\".replace(/(\\r\\n|\\n|\\r)/gm, \"\");"}], "evaldo":[{"test":true,"then":"__SETUP2"}]},
-        "__SETUP": {"type":"cli", "command":"DYNAMIK let Manif = \"$Manifest\".split(\"/\")[\"$Manifest\".split(\"/\").length-1];\"cat \" + Manif","queryresult": "", "evalwrite":[{"variable":"LibraryDrivers", "value":"DYNAMIK \"$Result\".replace(/(\\r\\n|\\n|\\r)/gm, \"\");"}], "evaldo":[{"test":true,"then":"__SETUP2"}]},
+        "POWER ON": {"type":"static", "command":"","queryresult": "", "evaldo":[{"test":true,"then":"__SETUP0"}]},
+        "__SETUP0": {"type":"cli", "command":"DYNAMIK let Manif = \"$Manifest\".split(\"/\")[\"$Manifest\".split(\"/\").length-1]; \"curl -f --connect-timeout 1 $Manifest -o \" + Manif + \" || echo \\\"err\\\" \" ", "queryresult":"", "evalwrite":[{"variable":"LastLibraryUpdate", "value":"DYNAMIK \"$Result\"==\"err\" ? \"Updating Driver Library failed!\" : \"Driver Library successfully updated!\" "}], "evaldo":[{"test":true,"then":"__PERSIST"},{"test":true,"then":"__SETUP1"}]},
+        "__SETUP1": {"type":"cli", "command":"DYNAMIK let Manif = \"$Manifest\".split(\"/\")[\"$Manifest\".split(\"/\").length-1];\"cat \" + Manif + \" || echo \\\"err\\\" \" ","queryresult": "", "evalwrite":[{"variable":"LibraryDrivers", "value":"DYNAMIK \"$Result\"==\"err\" ? undefined : \"$Result\".replace(/(\\r\\n|\\n|\\r)/gm, \"\")"}], "evaldo":[{"test":true,"then":"__SETUP2"}]},
         "__SETUP2": {"type":"static", "command":"$LibraryDrivers","queryresult": "$.drivers", "evalwrite":[{"variable":"LibraryDrivers", "value":"$Result"}], "evaldo":[{"test":true,"then":"__ENRICHLIBRARY0"}]},
-        "__ENRICHLIBRARY0": {"type":"cli", "command":"ls -1 $ActivatedLib\/*.json | xargs -n 1 basename| sed -e \"s/\\.json$\/\/\"","queryresult": ["/(.*)./gm"], "evalwrite":[{"variable":"ActiveDrivers","value":"DYNAMIK let src = JSON.parse(\"$Result\"); let dest = []; src.forEach((item)=>{if (!item.endsWith(\"-DataStore\")) {dest.push(item);}}); JSON.stringify(dest);"}, {"variable":"LibraryDataStore","value":"DYNAMIK let src = JSON.parse(\"$Result\"); let dest = []; src.forEach((item)=>{if (item.endsWith(\"-DataStore\")) {dest.push(item);}}); JSON.stringify(dest);"}], "evaldo":[{"test":true,"then":"__ENRICHLIBRARY1"}]},
-        "__ENRICHLIBRARY1": {"type":"static", "command":"$LibraryDrivers","queryresult": "", "evalwrite":[{"variable":"LibraryDrivers", "value":"DYNAMIK let ld = $LibraryDrivers; ld.forEach((d) => { let t = d.driverLocation.split(\"\/\"); let u = t[t.length-1].split(\".json\")[0]; d.filename = u;if ($ActiveDrivers.findIndex((ad)=>{return ad == u})>=0) {d.active = true} else {d.active = false}}); JSON.stringify(ld);"}], "evaldo":[{"test":true,"then":"__ENRICHLIBRARY2"}]},
-        "__ENRICHLIBRARY2": {"type":"static", "command":"$LibraryDrivers","queryresult": "", "evalwrite":[{"variable":"LibraryDrivers", "value":"DYNAMIK let ld = $LibraryDrivers; $ActiveDrivers.forEach((ad)=>{if (ld.findIndex((driv) => {return driv.filename == ad})<0) {ld.push({\"name\":ad, \"author\":\"Unknown\",\"description\":\"No Description\",\"version\":0,\"driverLocation\":\"\",\"iconLocation\":\"https://raw.githubusercontent.com/jac459/meta-core/main/pics/meta.jpg\", \"filename\":ad,\"active\":true})} }); JSON.stringify(ld)"}], "evaldo":[{"test":true,"then":"__ENRICHLIBRARY3"}]},
-        "__ENRICHLIBRARY3": {"type":"static", "command":"$LibraryDrivers","queryresult": "", "evalwrite":[{"variable":"LibraryDrivers", "value":"DYNAMIK let ld = $LibraryDrivers; ld.forEach((d) => { let t = d.driverLocation.split(\"\/\"); let u = t[t.length-1].split(\".json\")[0]; if ($LibraryDataStore.findIndex((ds)=>{return ds.split(\"-DataStore\")[0] == u})>=0) {d.datastore = true} else {d.datastore=false}}); JSON.stringify(ld);"}]},
+        "__ENRICHLIBRARY0": {"type":"cli", "command":"ls -1 $ActivatedLib\/*.json | xargs -n 1 basename| sed -e \"s/\\.json$\/\/\"","queryresult": ["/(.*)./gm"], "evalwrite":[{"variable":"ActiveDrivers",      "value":"DYNAMIK let src = JSON.parse(\"$Result\"); let dest = []; if (src != undefined) { src.forEach((item)=>{if (!item.endsWith(\"-DataStore\")) {dest.push(item);}}) }; JSON.stringify(dest);"}, {"variable":"LibraryDataStore","value":"DYNAMIK let src = JSON.parse(\"$Result\"); let dest = []; src.forEach((item)=>{if (item.endsWith(\"-DataStore\")) {dest.push(item);}}); JSON.stringify(dest);"}], "evaldo":[{"test":true,"then":"__ENRICHLIBRARY1"}]},
+        "__ENRICHLIBRARY1": {"type":"cli", "command":"ls -1 $CoreLibrary\/*.json  | xargs -n 1 basename| sed -e \"s/\\.json$\/\/\"","queryresult": ["/(.*)./gm"], "evalwrite":[{"variable":"LocalLibraryDrivers","value":"DYNAMIK let src = JSON.parse(\"$Result\"); let dest = []; if (src != undefined) { src.forEach((item)=>{if (!item.endsWith(\"-DataStore\")) {dest.push(item);}}) }; JSON.stringify(dest);"}], "evaldo":[{"test":true,"then":"__ENRICHLIBRARY2"}]},
+        "__ENRICHLIBRARY2": {"type":"static", "command":"$LibraryDrivers","queryresult": "", "evalwrite":[{"variable":"LibraryDrivers", "value":"DYNAMIK let ld = $LibraryDrivers; if (ld != undefined) { ld.forEach((d) => { let t = d.driverLocation.split(\"\/\"); let u = t[t.length-1].split(\".json\")[0]; d.filename = u;if ($ActiveDrivers.findIndex((ad)      =>{return ad == u})>=0) {d.active  = true} else {d.active  = false}}) }; JSON.stringify(ld);"}], "evaldo":[{"test":true,"then":"__ENRICHLIBRARY3"}]},
+        "__ENRICHLIBRARY3": {"type":"static", "command":"$LibraryDrivers","queryresult": "", "evalwrite":[{"variable":"LibraryDrivers", "value":"DYNAMIK let ld = $LibraryDrivers; if (ld != undefined) { ld.forEach((d) => { let t = d.driverLocation.split(\"\/\"); let u = t[t.length-1].split(\".json\")[0]; d.filename = u;if ($LocalLibraryDrivers.findIndex((ad)=>{return ad == u})>=0) {d.library = true} else {d.library = false}}) }; JSON.stringify(ld);"}], "evaldo":[{"test":true,"then":"__ENRICHLIBRARY4"}]},
+        "__ENRICHLIBRARY4": {"type":"static", "command":"$LibraryDrivers","queryresult": "", "evalwrite":[{"variable":"LibraryDrivers", "value":"DYNAMIK let ld = $LibraryDrivers; ld == undefined ? ld=[] : ld; $ActiveDrivers.forEach((ad)      =>{if (ld.findIndex((driv) => {return driv.filename == ad})<0) {ld.push({\"name\":ad, \"author\":\"Unknown\",\"description\":\"No Description. This is a User defined Driver.\",\"version\":\"N/A\",\"driverLocation\":\"\",\"iconLocation\":\"$IconBaseUrl/meta.jpg\",\"filename\":ad,\"library\":true,\"active\":true, \"IsUserDefined\":true})} }); JSON.stringify(ld)"}], "evaldo":[{"test":true,"then":"__ENRICHLIBRARY5"}]},
+        "__ENRICHLIBRARY5": {"type":"static", "command":"$LibraryDrivers","queryresult": "", "evalwrite":[{"variable":"LibraryDrivers", "value":"DYNAMIK let ld = $LibraryDrivers; ld == undefined ? ld=[] : ld; $LocalLibraryDrivers.forEach((ad)=>{if (ld.findIndex((driv) => {return driv.filename == ad})<0) {ld.push({\"name\":ad, \"author\":\"Unknown\",\"description\":\"No Description. This is a User defined Driver.\",\"version\":\"N/A\",\"driverLocation\":\"\",\"iconLocation\":\"$IconBaseUrl/meta.jpg\",\"filename\":ad,\"library\":true,\"active\":false,\"IsUserDefined\":true})} }); JSON.stringify(ld)"}], "evaldo":[{"test":true,"then":"__ENRICHLIBRARY6"}]},
+        "__ENRICHLIBRARY6": {"type":"static", "command":"$LibraryDrivers","queryresult": "", "evalwrite":[{"variable":"LibraryDrivers", "value":"DYNAMIK let ld = $LibraryDrivers; ld.forEach((d) => { let u = d.filename; if ($LibraryDataStore.findIndex((ds)=>{return ds.split(\"-DataStore\")[0] == u})>=0) {d.datastore = true} else {d.datastore=false}}); JSON.stringify(ld);"}]},
         "POWER OFF": {"type":"static", "command":"."}
     },
     "directories":{
-        "Settings": {"label":"Settings", 
-            "feeders": {
-              "Settings":{"label":"Settings", 
-                "commandset": [{"type":"static", "command":"{}", "itemtype":"tile", "itemaction":"","itemimage":"https://raw.githubusercontent.com/jac459/meta-core/main/pics/meta.jpg"},
-                  {"type":"static", "command":"[{\"name\":\"Library\", \"label\":\"Drivers Library\", \"imageurl\":\"https://raw.githubusercontent.com/jac459/meta-core/main/pics/list.jpg\",\"navigation\":\"Library\"}, {\"name\":\"Recipes\", \"label\":\"Neeo Recipes\", \"imageurl\":\"https://raw.githubusercontent.com/jac459/meta-core/main/pics/recipe.jpg\",\"navigation\":\"Recipes\"}, {\"name\":\"Global Settings\", \"label\":\"Manage the .meta\", \"imageurl\":\"https://raw.githubusercontent.com/jac459/meta-core/main/pics/settings.jpg\",\"navigation\":\"Manage\"}]", 
-                    "queryresult":"$.*", "itemname":"DYNAMIK JSON.parse(\"$Result\").name", "itemlabel":"DYNAMIK JSON.parse(\"$Result\").label", "itemimage":"DYNAMIK JSON.parse(\"$Result\").imageurl",
-                    "evalnext":[
-                      {"test":"DYNAMIK (JSON.parse(\"$Result\").navigation == \"Library\")", "then":"Library", "or":""},
-                      {"test":"DYNAMIK (JSON.parse(\"$Result\").navigation == \"Recipes\")", "then":"Rooms", "or":""},
-                      {"test":"DYNAMIK (JSON.parse(\"$Result\").navigation == \"Manage\")", "then":"Manage", "or":""}
-                    ]
-                  }]
-              },
-              "Library":{"label":"Drivers list", "commandset": [
-                {"type":"static", "command":"{}", "itemtype":"tile", "itemUI":"reload", "itemimage":"https://raw.githubusercontent.com/jac459/meta-core/main/pics/refresh.jpg", "evaldo":[{"test":true,"then":"__ENRICHLIBRARY0"}]},
-                {"type":"static", "command":"$LibraryDrivers","queryresult": "$.*","itemname":"DYNAMIK JSON.parse(\"$Result\").name + \" by \" + JSON.parse(\"$Result\").author", "itemimage": "DYNAMIK JSON.parse(\"$Result\").iconLocation", "itemlabel":"DYNAMIK JSON.parse(\"$Result\").active?\"DRIVER ACTIVATED\":\"Not Active\"", "evalnext":[{"test":true, "then":"LibraryChoice", "or":""}], "evalwrite":[{"variable":"CurrentDriver","value":"DYNAMIK JSON.parse(\"$Result\").filename"}]}]
-              },
-              "LibraryChoice":
-              {"label":"", 
-                "commandset": [
-                  {"type":"static", "command":"DYNAMIK let ld = $LibraryDrivers; ld.find((driv) => {return driv.filename == \"$CurrentDriver\"});", "itemtype":"tile", "itemimage":"DYNAMIK JSON.parse(\"$Result\").iconLocation;"},
-                  {"type":"static", "command":"DYNAMIK let ld = $LibraryDrivers; ld.find((driv) => {return driv.filename == \"$CurrentDriver\"});", "itemtype":"button", "itemUI":true, "itemname":"DYNAMIK JSON.parse(\"$Result\").name"},
-                  {"type":"static", "command":"DYNAMIK let ld = $LibraryDrivers; ld.find((driv) => {return driv.filename == \"$CurrentDriver\"});", "itemtype":"button", "itemUI":true, "itemname":"DYNAMIK JSON.parse(\"$Result\").description"},
-                  {"type":"static", "command":"DYNAMIK let ld = $LibraryDrivers; ld.find((driv) => {return driv.filename == \"$CurrentDriver\"});", "itemimage":"DYNAMIK let cd = JSON.parse(\"$Result\"); cd.active?\"https://raw.githubusercontent.com/jac459/meta-core/main/pics/selected.jpg\":\"https://raw.githubusercontent.com/jac459/meta-core/main/pics/unselected.jpg\"", "itemUI":"reload", "itemname":"DYNAMIK let cd = JSON.parse(\"$Result\"); cd.active?\"Deactivate Driver\":\"Activate Driver\"", "itemaction":"ActivateAction"},
-                  {"type":"static", "command":"DYNAMIK let ld = $LibraryDrivers; ld.find((driv) => {return driv.filename == \"$CurrentDriver\"});", "itemimage":"https://raw.githubusercontent.com/jac459/meta-core/main/pics/update.jpg", "itemaction":"UpdateAction", "itemUI":"reload", "itemlabel":"DYNAMIK JSON.parse(\"$Result\").updated?\"Driver Updated in Library\":\"Driver not yet updated\"", "itemname":"Download the latest version of your driver", "evalwrite":[{"variable":"LibraryDrivers","value":"DYNAMIK let ld = $LibraryDrivers; ld.find((driv) => {return driv.filename == \"$CurrentDriver\"}).updated = true; JSON.stringify(ld);"}]},
-                  {"type":"static", "command":"DYNAMIK let ld = $LibraryDrivers; ld.find((driv) => {return driv.filename == \"$CurrentDriver\"});", "itemimage":"https://raw.githubusercontent.com/jac459/meta-core/main/pics/warning.jpg", "itemUI" : "reload", "itemaction":"DatastoreAction", "itemlabel":"Factory default for drivers ;-)", "itemname":"DYNAMIK let cd = JSON.parse(\"$Result\"); cd.datastore?\"Delete DataStore\":\"No DataStore to delete\""}
-                ]
-              },
-              "ActivateAction":{"label":"", "commandset": [{"type":"cli", "command":"DYNAMIK let cd = JSON.parse(\"$Result\");if (cd.active) {\"rm $ActivatedLib/\" + cd.filename + \".json*\"} else {\"cp $CoreLibrary/\" + cd.filename + \".json $ActivatedLib/\"}", "evalwrite":[{"variable":"LibraryDrivers","value":"DYNAMIK let ld = $LibraryDrivers; let cd = ld.find((driv) => {return driv.filename == \"$CurrentDriver\"});cd.active = !cd.active; JSON.stringify(ld);"}]}]},
-              "UpdateAction":{"label":"", "commandset": [{"type":"cli", "command":"DYNAMIK let cd = JSON.parse(\"$Result\");\"wget \" + cd.driverLocation + \" -O $CoreLibrary/\" + cd.filename + \".json\""}]},
-              "DatastoreAction":{"label":"", "commandset": [{"type":"cli", "command":"DYNAMIK let cd = JSON.parse(\"$Result\");\"rm $ActivatedLib/\" + cd.filename + \"-DataStore.json\"", "evalwrite":[{"variable":"LibraryDrivers","value":"DYNAMIK let ld = $LibraryDrivers; ld.find((driv) => {return driv.filename == \"$CurrentDriver\"}).datastore = false; JSON.stringify(ld);"}]}]},
+        "Settings": {"label":"Settings","feeders": {
+            "Settings":{"label":"Settings","commandset": [{
+                "type":"static", "command":"{}",
+                "itemtype":"tile",
+                "itemimage":"$IconBaseUrl/meta.jpg",
+                "itemaction":""
+                },{
+                "type":"static", "command":"[{\"name\":\"Library\", \"label\":\"Driver Library\", \"imageurl\":\"$IconBaseUrl/list.jpg\",\"navigation\":\"Library\"}, {\"name\":\"Recipes\", \"label\":\"Browse all installed Devices\", \"imageurl\":\"$IconBaseUrl/recipe.jpg\",\"navigation\":\"Recipes\"}, {\"name\":\"Global Settings\", \"label\":\"Manage the .meta\", \"imageurl\":\"$IconBaseUrl/settings.jpg\",\"navigation\":\"Manage\"}]", "queryresult":"$.*",
+                "itemimage":"DYNAMIK JSON.parse(\"$Result\").imageurl",
+                "itemname": "DYNAMIK JSON.parse(\"$Result\").name",
+                "itemlabel":"DYNAMIK JSON.parse(\"$Result\").label",                   
+                "evalnext":[
+                    {"test":"DYNAMIK (JSON.parse(\"$Result\").navigation == \"Library\")", "then":"Library", "or":""},
+                    {"test":"DYNAMIK (JSON.parse(\"$Result\").navigation == \"Recipes\")", "then":"Rooms", "or":""},
+                    {"test":"DYNAMIK (JSON.parse(\"$Result\").navigation == \"Manage\")",  "then":"Manage", "or":""}
+                ]}
+            ]},
+            "Library":{"label":"Drivers list", "commandset": [{
+                "type":"static", "command":".",
+                "itemtype":"button",
+                "itemname":"$LastLibraryUpdate",
+                "itemUI":true,
+                "itemaction":""
+                },{
+                "type":"static", "command":"$LibraryDrivers","queryresult": "$.*",
+                "itemimage":"DYNAMIK JSON.parse(\"$Result\").iconLocation",
+                "itemname": "DYNAMIK JSON.parse(\"$Result\").name + \" by \" + JSON.parse(\"$Result\").author",
+                "itemlabel":"DYNAMIK JSON.parse(\"$Result\").active ? \">> DRIVER ACTIVE <<\" : (JSON.parse(\"$Result\").library ? \"Not active\" : \"Available for Download\") ",
+                "evalwrite":[
+                    {"variable":"CurrentDriver","value":"DYNAMIK JSON.parse(\"$Result\").filename"},
+                    {"variable":"IsUserDefined","value":"DYNAMIK JSON.parse(\"$Result\").IsUserDefined ? true : false"}
+                ],
+                "evalnext":[{"test":true, "then":"LibraryChoice", "or":""}]
+                }
+            ]},
+            "LibraryChoice":{"label":"", "commandset": [{
+                "type":"static", "command":"DYNAMIK let ld = $LibraryDrivers; ld.find((driv) => {return driv.filename == \"$CurrentDriver\"});", 
+                "itemimage": "DYNAMIK JSON.parse(\"$Result\").iconLocation;",
+                "itemname":  "DYNAMIK JSON.parse(\"$Result\").name",
+                "itemlabel": "DYNAMIK \"Version: \" + JSON.parse(\"$Result\").version + \" | by: \"+JSON.parse(\"$Result\").author",
+                "itemaction":"."
+                },{
+                "type":"static", "command":"DYNAMIK let ld = $LibraryDrivers; ld.find((driv) => {return driv.filename == \"$CurrentDriver\"});",
+                "itemtype":  "info",
+                "itemname":  "Click here for more Info and Readme:",
+                "itemlabel": "DYNAMIK JSON.parse(\"$Result\").description"
+                },{
+                "type":"static", "command":"DYNAMIK let ld = $LibraryDrivers; ld.find((driv) => {return driv.filename == \"$CurrentDriver\"});",
+                "itemimage": "DYNAMIK \"$IconBaseUrl/\" + (JSON.parse(\"$Result\").active ? \"check_on.png\" : \"check_off.png\" )",
+                "itemname":  "DYNAMIK JSON.parse(\"$Result\").active ? \"Deactivate Driver\" : \"Activate Driver\"",
+                "itemlabel": "DYNAMIK JSON.parse(\"$Result\").IsUserDefined ? \"\" : (JSON.parse(\"$Result\").library ? (JSON.parse(\"$Result\").active?\"\":\"Restart meta after Activation!\")  :\"Download the Driver first!\") ",
+                "itemaction":"DYNAMIK JSON.parse(\"$Result\").library || JSON.parse(\"$Result\").active ? \"ActivateAction\" : \".\" ",
+                "itemUI":    "DYNAMIK JSON.parse(\"$Result\").library || JSON.parse(\"$Result\").active ? \"reload\" : false ",
+                "evalwrite":[{"variable":"LibraryDrivers","value":"DYNAMIK let ld = $LibraryDrivers; let cd = ld.find((driv) => {return driv.filename == \"$CurrentDriver\"});cd.active = JSON.parse(\"$Result\").library || JSON.parse(\"$Result\").active ? !cd.active : cd.active; JSON.stringify(ld);"}]
+                },{
+                "type":"static", "command":"DYNAMIK let ld = $LibraryDrivers; if ($IsUserDefined != true) { ld.find((driv) => {return driv.filename == \"$CurrentDriver\"}) };",
+                "itemimage": "$IconBaseUrl/download.jpg",
+                "itemname":  "DYNAMIK JSON.parse(\"$Result\").library ? \"Update this Driver\" : \"Download this Driver\" ",
+                "itemlabel": "DYNAMIK JSON.parse(\"$Result\").library ? (JSON.parse(\"$Result\").updated==\"err\"?\"Downloading Driver failed!\": (JSON.parse(\"$Result\").updated?\"Driver updated to local Library\":\"Download latest Verison\") ) : \"Download Driver to local Library\" ",
+                "itemaction":"UpdateAction",
+                "itemUI":    "reload",
+                "evalwrite":[{"variable":"LibraryDrivers","value":"DYNAMIK let ld = $LibraryDrivers; ld.find((driv) => {return driv.filename == \"$CurrentDriver\"}).library = true; ld.find((driv) => {return driv.filename == \"$CurrentDriver\"}).updated = (JSON.parse(\"$Result\").library); JSON.stringify(ld);"}]
+                },{
+                "type":"static", "command":"DYNAMIK let ld = $LibraryDrivers; ld.find((driv) => {return driv.filename == \"$CurrentDriver\"});",
+                "itemimage": "$IconBaseUrl/warning.jpg",
+                "itemname":  "DYNAMIK JSON.parse(\"$Result\").datastore ? \"Delete DataStore\" : \"No DataStore to delete\" ",
+                "itemlabel": "Reset Driver to Factory Defaults",
+                "itemaction":"DYNAMIK JSON.parse(\"$Result\").datastore ? \"DatastoreAction\" : \".\" ",
+                "itemUI" :   "DYNAMIK JSON.parse(\"$Result\").datastore ? \"reload\" : false "
+                }
+            ]},
+            "ActivateAction":        {"label":"", "commandset": [{"type":"cli", "command":"DYNAMIK let cd = JSON.parse(\"$Result\");if (cd.active) {\"mv $ActivatedLib/\" + cd.filename + \".json $CoreLibrary/\"} else {\"cp $CoreLibrary/\" + cd.filename + \".json $ActivatedLib/\"}" }]},
+            "UpdateAction":          {"label":"", "commandset": [{"type":"cli", "command":"DYNAMIK let cd = JSON.parse(\"$Result\");\"curl -f --connect-timeout 1 \" + cd.driverLocation + \" -o $CoreLibrary/\" + cd.filename + \".json || echo \\\"err\\\" \" ", "queryresult":"","evalwrite":[{"variable":"LibraryDrivers","value":"DYNAMIK let ld = $LibraryDrivers; ld.find((driv) => {return driv.filename == \"$CurrentDriver\"}).updated = (\"$Result\"==\"err\"?\"err\":true); JSON.stringify(ld);"}]}]},
+            "DatastoreAction":       {"label":"", "commandset": [{"type":"cli", "command":"DYNAMIK let cd = JSON.parse(\"$Result\");\"rm $ActivatedLib/\" + cd.filename + \"-DataStore.json\"", "evalwrite":[{"variable":"LibraryDrivers","value":"DYNAMIK let ld = $LibraryDrivers; ld.find((driv) => {return driv.filename == \"$CurrentDriver\"}).datastore = false; JSON.stringify(ld);"}]}]},
 
-              "ActivateActionExternal":{"label":"", "commandset": [{"type":"cli", "command":"DYNAMIK \"curl \" + \"$DriverLocation \" + \" -o \" + \" $ActivatedLib\" + \"/\" + \"$DriverName\"+ \".json\""}]},
-  
-              "Manage":{"label":"Manage the Meta", 
-                "commandset": [
-                  {"type":"static", "command":"{}", "itemtype":"tile", "itemimage":"https://raw.githubusercontent.com/jac459/meta-core/main/pics/settings.jpg"},
-                  {"type":"static", "command":"{\"\":true}", "queryresult":"$.", "itemname":"Restart meta", "itemlabel":"UI will be unresponsive for 1 min.", "itemimage":"https://raw.githubusercontent.com/jac459/meta-core/main/pics/meta.jpg",
-                    "itemaction":"RestartMeta","itemUI" : "reload"},
-                  {"type":"static", "command":"{\"\":true}", "queryresult":"$.", "itemname":"Update meta", "itemlabel":"Restart meta to take effect.", "itemimage":"https://raw.githubusercontent.com/jac459/meta-core/main/pics/updateMeta.jpg",
-                      "itemaction":"UpdateMeta","itemUI" : "reload"},
-                  {"type":"static", "command":"{\"\":true}", "queryresult":"$.", "itemname":"Restart Node-Red", "itemlabel":"Restart your Node-Red instance.", "itemimage":"https://raw.githubusercontent.com/jac459/meta-core/main/pics/Node-red-icon.jpg",
-                    "itemaction":"RestartNodeRed","itemUI" : "reload"},
-                  {"type":"static", "command":"{\"\":true}", "queryresult":"$.", "itemname":"Restart MQTT", "itemlabel":"Restart your mosquitto instance.", "itemimage":"https://raw.githubusercontent.com/jac459/meta-core/main/pics/mosquitto-mono.jpg",
-                    "itemaction":"RestartMosquitto","itemUI" : "reload"},
-                  {"type":"static", "command":"{\"\":true}", "queryresult":"$.*", "itemname":"Scan the network.", "itemlabel":"Devices found on boot.", "itemimage":"https://raw.githubusercontent.com/jac459/meta-core/main/pics/scans.jpg",
-                    "evalnext":[{"test":true, "then":"Scan", "or":""}]
-                  }              
-                ]
-              },
-              "Scan":{"label":"Scan Network", "commandset": [{"type":"mDNS", "command":"", "queryresult":"$.*", "itemname":"DYNAMIK JSON.parse(\"$Result\").name", "itemtype": "listitem", "itemlabel":"DYNAMIK JSON.parse(\"$Result\").name", "itemimage":"https://raw.githubusercontent.com/jac459/meta-core/main/pics/meta.jpg", "evalnext":[{"test":true, "then":"ScanItem", "or":""}], "evalwrite":[{"variable":"CurrentNetworkDevice","value":"DYNAMIK JSON.stringify([{\"value\":\"name : \" + JSON.parse(\"$Result\").name}, {\"value\":\"short : \" + JSON.parse(\"$Result\").short}, {\"value\":\"ip : \" + JSON.parse(\"$Result\").ip}, {\"value\":\"mac : \" + JSON.parse(\"$Result\").mac}])"}]}]},
-              "ScanItem":{"label":"Scan Network", "commandset": [{"type":"static", "command":"$CurrentNetworkDevice", "queryresult":"$.*", "itemname":"DYNAMIK JSON.parse(\"$Result\").value.split(\" : \")[0]", "itemlabel":"DYNAMIK JSON.parse(\"$Result\").value.split(\" : \")[1]", "itemimage":"https://raw.githubusercontent.com/jac459/meta-core/main/pics/white.jpg", "itemaction":"test", "itemtype": "listitem"}]},
-               
-              "RestartMeta":{"label":"", "commandset": [{"type":"cli", "command":"pm2 restart meta"}]},
-              "RestartNodeRed":{"label":"", "commandset": [{"type":"cli", "command":"pm2 restart node-red"}]},
-              "RestartMosquitto":{"label":"", "commandset": [{"type":"cli", "command":"pm2 restart mosquitto"}]},
-              "UpdateMeta":{"label":"", "commandset": [{"type":"cli", "command":"wget -qO- https://raw.githubusercontent.com/jac459/meta/Release/update.sh | . ./update.sh", "itemUI" : "reload"}]},
+            "Rooms":{"label":"Rooms list","commandset": [{
+                "type":"http-get", "command":"http://$NeeoBrainIP:3000/v1/projects/home/rooms/", "queryresult":"$.*",
+                "itemimage":"https://raw.githubusercontent.com/jac459/metadriver/master/AVReceiver/rooms.jpg",
+                "itemname": "DYNAMIK JSON.parse(\"$Result\").name",
+                "itemlabel":"Room",
+                "evalwrite":[{"variable":"RoomKey","value":"DYNAMIK JSON.parse(\"$Result\").key"}],
+                "evalnext":[{"test":true, "then":"Devices", "or":"Rooms"}]
+                }
+            ]},
+            "Devices":{"label":"Devices list","commandset": [{
+                "type":"http-get", "command":"http://$NeeoBrainIP:3000/v1/projects/home/rooms/$RoomKey/devices", "queryresult":"$.*",
+                "itemimage":"https://raw.githubusercontent.com/jac459/metadriver/master/AVReceiver/devices.jpg",
+                "itemname": "DYNAMIK JSON.parse(\"$Result\").name",
+                "itemlabel":"Device",
+                "evalwrite":[{"variable":"DeviceKey","value":"DYNAMIK JSON.parse(\"$Result\").key"}],
+                "evalnext":[{"test":true, "then":"Macros", "or":"Devices"}]
+                }
+            ]},
+            "Macros":{"label":"Macros list", "commandset": [{
+                "type":"http-get", "command":"http://$NeeoBrainIP:3000/v1/projects/home/rooms/$RoomKey/devices/$DeviceKey/macros", "queryresult":"$.*",
+                "itemimage": "https://raw.githubusercontent.com/jac459/metadriver/master/AVReceiver/Neeo_logo.jpg",
+                "itemname":  "DYNAMIK JSON.parse(\"$Result\").name",
+                "itemlabel": "Button",
+                "itemaction":"ACTION_ActivateMacro",
+                "evalwrite":[{"variable":"TriggerKey","value":"DYNAMIK JSON.parse(\"$Result\").key"}]
+                }
+            ]},
+            "ACTION_ActivateMacro":{"label":"","commandset": [{"type":"http-get", "command":"http://$NeeoBrainIP:3000/v1/projects/home/rooms/$RoomKey/devices/$DeviceKey/macros/$TriggerKey/trigger"}]},
 
-              "Rooms":{"label":"Rooms list", "commandset": [{"type":"http-get", "command":"http://$NeeoBrainIP:3000/v1/projects/home/rooms/", "queryresult":"$.*", "itemname":"DYNAMIK JSON.parse(\"$Result\").name", "itemtype": "listitem", "itemlabel":"Recipe name", "itemimage":"https://raw.githubusercontent.com/jac459/metadriver/master/AVReceiver/rooms.jpg", "evalnext":[{"test":true, "then":"Devices", "or":"Rooms"}], "evalwrite":[{"variable":"RoomKey","value":"DYNAMIK JSON.parse(\"$Result\").key"}]}]},
-              "Devices":{"label":"Devices list", "commandset": [{"type":"http-get", "command":"http://$NeeoBrainIP:3000/v1/projects/home/rooms/$RoomKey/devices", "queryresult":"$.*", "itemname":"DYNAMIK JSON.parse(\"$Result\").name", "itemlabel":"Recipe name", "itemimage":"https://raw.githubusercontent.com/jac459/metadriver/master/AVReceiver/devices.jpg", "evalnext":[{"test":true, "then":"Macros", "or":"Devices"}], "evalwrite":[{"variable":"DeviceKey","value":"DYNAMIK JSON.parse(\"$Result\").key"}]}]},
-              "Macros":{"label":"Macros list", "commandset": [{"type":"http-get", "command":"http://$NeeoBrainIP:3000/v1/projects/home/rooms/$RoomKey/devices/$DeviceKey/macros", "queryresult":"$.*", "itemname":"DYNAMIK JSON.parse(\"$Result\").name", "itemlabel":"Recipe name", "itemaction":"ACTION_ActivateMacro", "itemimage":"https://raw.githubusercontent.com/jac459/metadriver/master/AVReceiver/Neeo_logo.jpg", "evalwrite":[{"variable":"TriggerKey","value":"DYNAMIK JSON.parse(\"$Result\").key"}]}]},
-              "ACTION_ActivateMacro":{"label":"", "commandset": [{"type":"http-get", "command":"http://$NeeoBrainIP:3000/v1/projects/home/rooms/$RoomKey/devices/$DeviceKey/macros/$TriggerKey/trigger", "queryresult":"$.*", "itemname":"", "itemlabel":"Recipe name", "itemaction":""}]}
-            }
-          }
-        }
-  }
+            "Manage":{"label":"Manage the Meta","commandset": [{
+                "type":"static", "command":".", "queryresult":"$.",
+                "itemimage": "$IconBaseUrl/meta.jpg",
+                "itemname":  "Restart meta",
+                "itemlabel": "UI will be unresponsive for 1 min.",
+                "itemaction":"RestartMeta",
+                "itemUI" :   "reload"
+                },{
+                "type":"static", "command":".", "queryresult":"$.",
+                "itemimage": "$IconBaseUrl/updateMeta.jpg",
+                "itemname":  "Update meta",
+                "itemlabel": "Restart meta to take effect.",
+                "itemaction":"UpdateMeta",
+                "itemUI" :   "reload"
+                },{
+                "type":"static", "command":".", "queryresult":"$.",
+                "itemimage": "$IconBaseUrl/updateMeta.jpg",
+                "itemname":  "Update Driver Library",
+                "itemlabel": "$LastLibraryUpdate",
+                "itemaction":"UpdateLibrary",
+                "itemUI" :   "reload"
+                },{
+                "type":"static", "command":".", "queryresult":"$.",
+                "itemimage": "$IconBaseUrl/Node-red-icon.jpg",
+                "itemname":  "Restart Node-Red",
+                "itemlabel": "Restart your Node-Red instance.",
+                "itemaction":"RestartNodeRed",
+                "itemUI" :   "reload"
+                },{
+                "type":"static", "command":".", "queryresult":"$.",
+                "itemimage": "$IconBaseUrl/mosquitto-mono.jpg",
+                "itemname":  "Restart MQTT",
+                "itemlabel": "Restart your mosquitto instance.",
+                "itemaction":"RestartMosquitto",
+                "itemUI" :   "reload"
+                },{
+                "type":"static", "command":".", "queryresult":"$.*",
+                "itemimage": "$IconBaseUrl/scans.jpg",
+                "itemname":  "Show Result of Network Scan",
+                "itemlabel": "Browse resultsDiscovery.json",
+                "evalnext":[{"test":true, "then":"Scan", "or":""}]
+                }              
+            ]},
+            "Scan":{"label":"Network Devices","commandset": [{
+                "type":"mDNS", "command":"", "queryresult":"$.*",
+                "itemimage":"$IconBaseUrl/meta.jpg",
+                "itemname": "DYNAMIK JSON.parse(\"$Result\").ip",
+                "itemlabel":"DYNAMIK JSON.parse(\"$Result\").name",
+                "evalwrite":[{"variable":"CurrentNetworkDevice","value":"DYNAMIK JSON.stringify([{\"value\":\"name : \" + JSON.parse(\"$Result\").name}, {\"value\":\"short : \" + JSON.parse(\"$Result\").short}, {\"value\":\"ip : \" + JSON.parse(\"$Result\").ip}, {\"value\":\"mac : \" + JSON.parse(\"$Result\").mac}])"}],
+                "evalnext":[{"test":true, "then":"ScanItem", "or":""}]
+                }
+            ]},
+            "ScanItem":{"label":"Network Devices","commandset": [{
+                "type":"static", "command":"$CurrentNetworkDevice", "queryresult":"$.*",
+                "itemimage":"$IconBaseUrl/white.jpg",
+                "itemname": "DYNAMIK JSON.parse(\"$Result\").value.split(\" : \")[0]",
+                "itemlabel":"DYNAMIK JSON.parse(\"$Result\").value.split(\" : \")[1]",
+                "itemaction":"."
+                }
+            ]},
+            "RestartMeta":     {"label":"", "commandset": [{"type":"cli", "command":"pm2 restart meta"}]},
+            "UpdateMeta":      {"label":"", "commandset": [{"type":"cli", "command":"wget -qO- https://raw.githubusercontent.com/jac459/meta/Release/update.sh | . ./update.sh"}]},
+            "UpdateLibrary":   {"label":"", "commandset": [{"type":"cli", "command":"DYNAMIK let Manif = \"$Manifest\".split(\"/\")[\"$Manifest\".split(\"/\").length-1]; \"curl -f --connect-timeout 1 $Manifest -o \" + Manif + \" || echo \\\"err\\\" \" ", "queryresult":"", "evalwrite":[{"variable":"LastLibraryUpdate", "value":"DYNAMIK \"$Result\"==\"err\" ? \"Updating Driver Library failed!\" : \"Driver Library successfully updated!\" "}], "evaldo":[{"test":true,"then":"__PERSIST"},{"test":true,"then":"__SETUP1"}]}]},
+            "RestartNodeRed":  {"label":"", "commandset": [{"type":"cli", "command":"pm2 restart node-red"}]},
+            "RestartMosquitto":{"label":"", "commandset": [{"type":"cli", "command":"pm2 restart mosquitto"}]}
+        }}
+    }
+    }
 }
-    
-
