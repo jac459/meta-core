@@ -30,10 +30,13 @@ Meta need to be restarted after downloading the file. If you are running meta in
 ```pm2 restart meta```
 
 #### Install
-Now metaCore need to be installed as a device to your NEEO system. For this use the App or the WebUI and go to:
-1. Add Device and search for "meta"
-2. select "JAC459 .meta2 metaCore" and click "next"
-3. metaCore
+Now metaCore needs to be installed as a device to your NEEO system. For this use the App or the WebUI and go to:
+1. "Add Device" and search for: "meta"
+2. Select "JAC459 .meta2 metaCore" and click "next".
+3. On the next page "metaCore" will be selected automatically. Click "next".
+4. Select the room to install metaCore to. It is recommended to install metaCore to a dedicated room like "Brain Setup" which contains the devices to setup your NEEO brain (NEEO Cranium with: NEEO Brain LED on/ off, NEEO Brain reboot). You can create this room in Step 4 if you like.
+5. After finishing the installation you can go to "Device List" to check wheter metaCore was installed.
+6. Make sure the recipe metaCore is active.
 
 | 1.      | 2.      | 3.      |
 |---------|---------|---------|
