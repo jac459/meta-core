@@ -29,6 +29,7 @@ b) If you have a custom installation you can download the file manually with thi
 
 Meta needs to be restarted after downloading/ moving the file to the folder "./active". If you are running meta in pm2 the command for restarting meta is:\
 ```pm2 restart meta```
+
 After the restart meta will run all drivers in the folder "./active". Meaning meta will run the driver for "metaCore", hence adding support for this "virtual device" to your NEEO system.
 
 #### Install metaCore to your NEEO system
@@ -81,16 +82,45 @@ As mentioned above MetaCore is a "virtual device" installed to a room (see image
 [add3.2]:https://user-images.githubusercontent.com/39094775/159338394-e72cbac1-a2b3-43b2-9a52-13e9492fc231.png
 [add3.3]:https://user-images.githubusercontent.com/39094775/159340136-81c38ead-6420-4399-822b-937545bc3f44.png
 
-#### Manage the "Driver Library" of meta:
+#### Manage the "Driver Library" of meta (UNDER CONSTRUCTION):
 - download/ update drivers created by the meta community to your system
 - activate/ deactivate drivers
 - reset drivers to factory default by deleting datastore files.
-#### Browse all "Recipes" of your NEEO system:
+
+#### Browse all "Recipes" of your NEEO system (UNDER CONSTRUCTION):
 - execute all actions of your installed devices
-#### Manage "Global Settings" of meta:
-- Restart meta
-- Update meta
-- Update Driver Library (Download latest Library with Drivers created by the community)
-- Restart Node-Red (Restart your Node-Red instance.)
-- Restart MQTT (Restart your mosquitto instance.)
-- Show Results of Network Scan (Browse resultsDiscovery.json)
+
+#### Global Settings
+The "Global Settings" of metaCore contain the following features:
+
+| ![add6.1] |
+|-----------|
+
+[add6.1]:https://user-images.githubusercontent.com/39094775/159341310-789a0c48-0fc8-47b8-ba90-87c009e9b0ab.png
+
+##### Restart meta
+Meta will be restarted when executing this action and UI will be unresponsive for about 1 minute. Restarting meta can be necessery in a number of situations.\
+MetaCore will lauch the following command to restart your meta:\
+```pm2 restart meta```
+
+##### Update meta
+MetaCore will lauch the following command to update your meta platform:\
+```wget -qO- https://raw.githubusercontent.com/jac459/meta/Release/update.sh | . ./update.sh```
+
+##### Update Driver Library
+MetaCore will download the latest list of "easy to install" drivers from the meta community (drivers.manifest). After downloading the latest drivers.manifest metaCore will also check you local library folder, as well as the active folder to prepare information for the "Driver Library" (see above). Under normal circumstances this process is executed on each startup of metaCore and you dont need to ecxecute it manually. However for debugging it can be helpful to have this option. 
+The success of this process is confirmed with "Driver Library successfully updated!" in the first line of the "Driver Library".\
+Please keep in mind, that meta needs a connection to the internet to download the latest list.
+
+For advanced users: In some rare cases meta is set up in such a way that is not connected to the internet. In this case metaCore wont be able to download the latest drivers.manifest and also metaCore wont be able to download the listed drivers. However you can still make use of the "Driver Library" as the Library can show all your local driver files in "./library" and "./active". If your meta platform is permanently disconnected from the internet you can also go the extra step an remove the drivers.manifest from the root folder of meta. Doing this will cause the "Driver Library" to only list your local files.
+
+##### Restart Node-Red
+MetaCore will lauch the following command to restart your Node-Red instance:\
+```pm2 restart node-red```
+
+##### Restart MQTT
+MetaCore will lauch the following command to restart your mosquitto instance.:\
+```pm2 restart mosquitto```
+
+##### Show Results of Network Scan
+Some drivers for meta rely on [mDNS](https://en.wikipedia.org/wiki/Multicast_DNS) to automatically find devices on your network. This option allows you to browse through the list of all devices meta was able to find - commonly known as the file "resultsDiscovery.json".
