@@ -4,13 +4,13 @@ MetaCore can be used to manage the meta platform from the UI of the NEEO remote.
 Visit this page to learn more about meta: https://github.com/jac459/meta
 
 metaCore can be used to:
-- Manage the "Driver Library" of meta:
+- Manage the ["Driver Library"](https://github.com/jac459/meta-core#manage-the-driver-library-of-meta) of meta:
   - download/ update drivers created by the meta community to your system
   - activate/ deactivate drivers
   - reset drivers to factory default by deleting datastore files.
-- Browse all "Recipes" of your NEEO system:
+- Browse all ["Recipes"](https://github.com/jac459/meta-core#recipes) of your NEEO system:
   - execute all actions of your installed devices
-- Manage "Global Settings" of meta:
+- Manage ["Global Settings"](https://github.com/jac459/meta-core#global-settings) of meta:
   - Restart meta
   - Update meta
   - Update Driver Library (Download latest Library with Drivers created by the community)
@@ -84,7 +84,8 @@ As mentioned above MetaCore is a "virtual device" installed to a room (see image
 [add3.2]:https://user-images.githubusercontent.com/39094775/159338394-e72cbac1-a2b3-43b2-9a52-13e9492fc231.png
 [add3.3]:https://user-images.githubusercontent.com/39094775/159340136-81c38ead-6420-4399-822b-937545bc3f44.png
 
-#### Manage the "Driver Library" of meta (UNDER CONSTRUCTION):
+#### Manage the "Driver Library" of meta 
+CHAPTER UNDER CONSTRUCTION
 - download/ update drivers created by the meta community to your system
 - activate/ deactivate drivers
 - reset drivers to factory default by deleting datastore files.
