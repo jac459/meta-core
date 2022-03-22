@@ -91,7 +91,9 @@ As mentioned above MetaCore is a "virtual device" installed to a room (see image
 
 #### Recipes
 The "Recipes" can be used to execute ALL actions of ALL devices installed on your NEEO system. This can be helpful to quickly test an action without adding a dedicated shortcut.
-For Example execute the button "Party" on a streaming speaker (WX-010) in the Kitchen: Recipes
+For Example execute the button "Party" on a streaming speaker (WX-010) in the Kitchen: 
+
+Recipes > Kitchen > WX-010 Küche > Party
 
 | ![add5.1] | ![add5.2] | ![add5.3] |
 |-----------|-----------|-----------|
