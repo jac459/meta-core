@@ -1,9 +1,9 @@
 # metaCore
-MetaCore allows you to manage your meta platform from your NEEO remote.
+MetaCore can be used to manage the meta platform from the UI of the NEEO remote.
 
 Visit this page to learn more about meta: https://github.com/jac459/meta
 
-metaCore will allow you to:
+metaCore can be used to:
 - Manage the "Driver Library" of meta:
   - download/ update drivers created by the meta community to your system
   - activate/ deactivate drivers
@@ -17,6 +17,8 @@ metaCore will allow you to:
   - Restart Node-Red (Restart your Node-Red instance.)
   - Restart MQTT (Restart your mosquitto instance.)
   - Show Results of Network Scan (Browse resultsDiscovery.json)
+
+Advanced users might run meta without the use of metaCore and know how to execute all those operations manually. For example by transfering files or by executing code on the command line. However metaCore can be used to execute all those operations from the NEEO remote in a convenient way and without further knowledge.
 
 ## How to install meta-core
 MetaCore is a "virtual device" that needs to be installed to the NEEO system.
@@ -87,8 +89,16 @@ As mentioned above MetaCore is a "virtual device" installed to a room (see image
 - activate/ deactivate drivers
 - reset drivers to factory default by deleting datastore files.
 
-#### Browse all "Recipes" of your NEEO system (UNDER CONSTRUCTION):
-- execute all actions of your installed devices
+#### Recipes
+The "Recipes" can be used to execute ALL actions of ALL devices installed on your NEEO system. This can be helpful to quickly test an action without adding a dedicated shortcut.
+For Example execute the button "Party" on a streaming speaker (WX-010) in the Kitchen: Recipes
+
+| ![add5.1] | ![add5.2] | ![add5.3] |
+|-----------|-----------|-----------|
+
+[add5.1]:https://user-images.githubusercontent.com/39094775/159522365-369fd623-28f9-4286-9008-172e0a341e7c.png
+[add5.2]:https://user-images.githubusercontent.com/39094775/159522384-ad033220-2621-4748-b375-ec0dd38fe8cd.png
+[add5.3]:https://user-images.githubusercontent.com/39094775/159522397-00c30a9a-c694-4552-8fbc-0b301ffe6f1d.png
 
 #### Global Settings
 The "Global Settings" of metaCore contain the following features:
