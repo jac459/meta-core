@@ -2,7 +2,7 @@
 {   "name":"metaCore",
     "manufacturer":"JAC459",
     "type":"MUSICPLAYER",
-    "version":3,
+    "version":4,
     "variables":{
         "ToInitiate":false
     },
@@ -25,6 +25,7 @@
         "LocalLibraryDrivers":"[]",
         "CurrentDriver":"",
         "IsUserDefined":"",
+        "BrainIP":"",
         "RoomKey":"",
         "DeviceKey":"",
         "TriggerKey":"",
@@ -61,8 +62,8 @@
                 "itemlabel":"DYNAMIK JSON.parse(\"$Result\").label",                   
                 "evalnext":[
                     {"test":"DYNAMIK (JSON.parse(\"$Result\").navigation == \"Library\")", "then":"Library", "or":""},
-                    {"test":"DYNAMIK (JSON.parse(\"$Result\").navigation == \"Recipes\")", "then":"Rooms", "or":""},
-                    {"test":"DYNAMIK (JSON.parse(\"$Result\").navigation == \"Manage\")",  "then":"Manage", "or":""}
+                    {"test":"DYNAMIK (JSON.parse(\"$Result\").navigation == \"Recipes\")", "then":"Brain",   "or":""},
+                    {"test":"DYNAMIK (JSON.parse(\"$Result\").navigation == \"Manage\")",  "then":"Manage",  "or":""}
                 ]}
             ]},
             "Library":{"label":"Drivers list", "commandset": [{
@@ -106,7 +107,7 @@
                 "type":"static", "command":"DYNAMIK let ld = $LibraryDrivers; if ($IsUserDefined != true) { ld.find((driv) => {return driv.filename == \"$CurrentDriver\"}) };",
                 "itemimage": "$IconBaseUrl/download.jpg",
                 "itemname":  "DYNAMIK JSON.parse(\"$Result\").library ? \"Update this Driver\" : \"Download this Driver\" ",
-                "itemlabel": "DYNAMIK JSON.parse(\"$Result\").library ? (JSON.parse(\"$Result\").updated==\"err\"?\"Downloading Driver failed!\": (JSON.parse(\"$Result\").updated?\"Driver updated to local Library\":\"Download latest Verison\") ) : \"Download Driver to local Library\" ",
+                "itemlabel": "DYNAMIK JSON.parse(\"$Result\").library ? (JSON.parse(\"$Result\").updated==\"err\"?\"Downloading Driver failed!\": (JSON.parse(\"$Result\").updated?\"Restart meta after Updating!\":\"Download latest Verison\") ) : \"Download Driver to local Library\" ",
                 "itemaction":"UpdateAction",
                 "itemUI":    "reload",
                 "evalwrite":[{"variable":"LibraryDrivers","value":"DYNAMIK let ld = $LibraryDrivers; ld.find((driv) => {return driv.filename == \"$CurrentDriver\"}).library = true; ld.find((driv) => {return driv.filename == \"$CurrentDriver\"}).updated = (JSON.parse(\"$Result\").library); JSON.stringify(ld);"}]
@@ -120,12 +121,21 @@
                 }
             ]},
             "ActivateAction":        {"label":"", "commandset": [{"type":"cli", "command":"DYNAMIK let cd = JSON.parse(\"$Result\");if (cd.active) {\"mv $ActivatedLib/\" + cd.filename + \".json $CoreLibrary/\"} else {\"cp $CoreLibrary/\" + cd.filename + \".json $ActivatedLib/\"}" }]},
-            "UpdateAction":          {"label":"", "commandset": [{"type":"cli", "command":"DYNAMIK let cd = JSON.parse(\"$Result\");\"curl -f --connect-timeout 1 \" + cd.driverLocation + \" -o $CoreLibrary/\" + cd.filename + \".json || echo \\\"err\\\" \" ", "queryresult":"","evalwrite":[{"variable":"LibraryDrivers","value":"DYNAMIK let ld = $LibraryDrivers; ld.find((driv) => {return driv.filename == \"$CurrentDriver\"}).updated = (\"$Result\"==\"err\"?\"err\":true); JSON.stringify(ld);"}]}]},
+            "UpdateAction":          {"label":"", "commandset": [{"type":"cli", "command":"DYNAMIK let cd = JSON.parse(\"$Result\");\"curl -f --connect-timeout 1 \" + cd.driverLocation + \" -o $CoreLibrary/\" + cd.filename + \".json || echo \\\"err\\\" \" + (cd.active?(\"&& cp $CoreLibrary/\" + cd.filename + \".json $ActivatedLib/\"):\"\") ", "queryresult":"","evalwrite":[{"variable":"LibraryDrivers","value":"DYNAMIK let ld = $LibraryDrivers; ld.find((driv) => {return driv.filename == \"$CurrentDriver\"}).updated = (\"$Result\"==\"err\"?\"err\":true); JSON.stringify(ld);"}]}]},
             "DatastoreAction":       {"label":"", "commandset": [{"type":"cli", "command":"DYNAMIK let cd = JSON.parse(\"$Result\");\"rm $ActivatedLib/\" + cd.filename + \"-DataStore.json\"", "evalwrite":[{"variable":"LibraryDrivers","value":"DYNAMIK let ld = $LibraryDrivers; ld.find((driv) => {return driv.filename == \"$CurrentDriver\"}).datastore = false; JSON.stringify(ld);"}]}]},
 
+            "Brain":{"label":"Brain list","commandset": [{
+                "type":"mDNS", "command":"", "queryresult":["$.[?(@.port==3000)][?(@property === \"short\" && @.match(/_neeo._tcp.local$/i))]^"],
+                "itemimage":"$IconBaseUrl/brain.jpg",
+                "itemname": "DYNAMIK  \"NEEO Brain @\" + JSON.parse(\"$Result\").ip",
+                "itemlabel":"Brain",
+                "evalwrite":[{"variable":"BrainIP","value":"DYNAMIK JSON.parse(\"$Result\").ip"}],
+                "evalnext":[{"test":true, "then":"Rooms", "or":"Brain"}]
+                }
+            ]},
             "Rooms":{"label":"Rooms list","commandset": [{
-                "type":"http-get", "command":"http://$NeeoBrainIP:3000/v1/projects/home/rooms/", "queryresult":"$.*",
-                "itemimage":"https://raw.githubusercontent.com/jac459/metadriver/master/AVReceiver/rooms.jpg",
+                "type":"http-get", "command":"http://$BrainIP:3000/v1/projects/home/rooms/", "queryresult":"$.*",
+                "itemimage":"$IconBaseUrl/rooms.jpg",
                 "itemname": "DYNAMIK JSON.parse(\"$Result\").name",
                 "itemlabel":"Room",
                 "evalwrite":[{"variable":"RoomKey","value":"DYNAMIK JSON.parse(\"$Result\").key"}],
@@ -133,8 +143,8 @@
                 }
             ]},
             "Devices":{"label":"Devices list","commandset": [{
-                "type":"http-get", "command":"http://$NeeoBrainIP:3000/v1/projects/home/rooms/$RoomKey/devices", "queryresult":"$.*",
-                "itemimage":"https://raw.githubusercontent.com/jac459/metadriver/master/AVReceiver/devices.jpg",
+                "type":"http-get", "command":"http://$BrainIP:3000/v1/projects/home/rooms/$RoomKey/devices", "queryresult":"$.*",
+                "itemimage":"$IconBaseUrl/devices.jpg",
                 "itemname": "DYNAMIK JSON.parse(\"$Result\").name",
                 "itemlabel":"Device",
                 "evalwrite":[{"variable":"DeviceKey","value":"DYNAMIK JSON.parse(\"$Result\").key"}],
@@ -142,15 +152,15 @@
                 }
             ]},
             "Macros":{"label":"Macros list", "commandset": [{
-                "type":"http-get", "command":"http://$NeeoBrainIP:3000/v1/projects/home/rooms/$RoomKey/devices/$DeviceKey/macros", "queryresult":"$.*",
-                "itemimage": "https://raw.githubusercontent.com/jac459/metadriver/master/AVReceiver/Neeo_logo.jpg",
+                "type":"http-get", "command":"http://$BrainIP:3000/v1/projects/home/rooms/$RoomKey/devices/$DeviceKey/macros", "queryresult":"$.*",
+                "itemimage": "$IconBaseUrl/recipe.jpg",
                 "itemname":  "DYNAMIK JSON.parse(\"$Result\").name",
                 "itemlabel": "Button",
                 "itemaction":"ACTION_ActivateMacro",
                 "evalwrite":[{"variable":"TriggerKey","value":"DYNAMIK JSON.parse(\"$Result\").key"}]
                 }
             ]},
-            "ACTION_ActivateMacro":{"label":"","commandset": [{"type":"http-get", "command":"http://$NeeoBrainIP:3000/v1/projects/home/rooms/$RoomKey/devices/$DeviceKey/macros/$TriggerKey/trigger"}]},
+            "ACTION_ActivateMacro":{"label":"","commandset": [{"type":"http-get", "command":"http://$BrainIP:3000/v1/projects/home/rooms/$RoomKey/devices/$DeviceKey/macros/$TriggerKey/trigger"}]},
 
             "Manage":{"label":"Manage the Meta","commandset": [{
                 "type":"static", "command":".", "queryresult":"$.",
@@ -200,7 +210,7 @@
                 "itemimage":"$IconBaseUrl/meta.jpg",
                 "itemname": "DYNAMIK JSON.parse(\"$Result\").ip",
                 "itemlabel":"DYNAMIK JSON.parse(\"$Result\").name",
-                "evalwrite":[{"variable":"CurrentNetworkDevice","value":"DYNAMIK JSON.stringify([{\"value\":\"name : \" + JSON.parse(\"$Result\").name}, {\"value\":\"short : \" + JSON.parse(\"$Result\").short}, {\"value\":\"ip : \" + JSON.parse(\"$Result\").ip}, {\"value\":\"mac : \" + JSON.parse(\"$Result\").mac}])"}],
+                "evalwrite":[{"variable":"CurrentNetworkDevice","value":"DYNAMIK JSON.stringify([{\"value\":\"Name : \" + JSON.parse(\"$Result\").name}, {\"value\":\"Short : \" + JSON.parse(\"$Result\").short}, {\"value\":\"IP : \" + JSON.parse(\"$Result\").ip}, {\"value\":\"Port : \" + JSON.parse(\"$Result\").port}, {\"value\":\"MAC : \" + JSON.parse(\"$Result\").mac}])"}],
                 "evalnext":[{"test":true, "then":"ScanItem", "or":""}]
                 }
             ]},
