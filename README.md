@@ -137,3 +137,23 @@ MetaCore will lauch the following command to restart your mosquitto instance.:\
 
 ##### Show Results of Network Scan
 Some drivers for meta rely on [mDNS](https://en.wikipedia.org/wiki/Multicast_DNS) to automatically find devices on your network. This option allows you to browse through the list of all devices meta was able to find - commonly known as the file "resultsDiscovery.json".
+
+
+## Versions
+#### Version 1 (JAC459)
+- First Release
+
+#### Version 2 (JAC459)
+- Update
+
+#### Version 3 (MarkusM)
+- Now automatically updating Driver Library (drivers.manifest) on each "POWER ON"
+- Driver Library: Improved appearance and Feedback to the User
+- Other minor Bugfixes
+
+#### Version 4 (MarkusM)
+- Recipes: Added support for multiple Brains
+- Library: Changed behaviour when downloading/ updating a driver file:
+  - previously: new driver file was only downloaded to the folder "./library"
+  - now: new driver file is additionally copied to folder "./actice" when driver is activated
+- Other minor Bugfixes
