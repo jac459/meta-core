@@ -112,13 +112,17 @@ The "Global Settings" of metaCore contain the following features:
 [add6.1]:https://user-images.githubusercontent.com/39094775/159341310-789a0c48-0fc8-47b8-ba90-87c009e9b0ab.png
 
 ##### Restart meta
-Meta will be restarted when executing this action and UI will be unresponsive for about 1 minute. Restarting meta can be necessery in a number of situations.\
-MetaCore will lauch the following command to restart your meta:\
+Meta will be restarted when executing this action and UI will be unresponsive for about 1 minute.\
+Restarting meta can be necessery in a number of situations. For example after updating meta or after changing the state of a Driver by updating, activating or deactivating.\
+MetaCore will lauch the following command in the background to restart meta:\
 ```pm2 restart meta```
 
 ##### Update meta
-MetaCore will lauch the following command to update your meta platform:\
+CAUTION: This will download the latest Version of meta from github to your System. A skript will be executed to replace/update all relevant Files of meta including the metaCore Driver.\
+MetaCore will launch the following script in the background:\
 ```wget -qO- https://raw.githubusercontent.com/jac459/meta/Release/update.sh | . ./update.sh```
+
+Meta must be restarted for the Update to take effect (refer to the option "Restart meta" which is described above).
 
 ##### Update Driver Library
 MetaCore will download the latest list of "easy to install" drivers from the meta community (drivers.manifest). After downloading the latest drivers.manifest metaCore will also check you local library folder, as well as the active folder to prepare information for the "Driver Library" (see above). Under normal circumstances this process is executed on each startup of metaCore and you dont need to ecxecute it manually. However for debugging it can be helpful to have this option. 
