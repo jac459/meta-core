@@ -24,7 +24,7 @@ Advanced users might run meta without the use of metaCore and know how to execut
 MetaCore is a "virtual device" that needs to be installed to the NEEO system.
 
 #### Download the driver file "metaCore.json"
-a) If you have followed the ["instructions"](https://github.com/jac459/meta#b---how-to-install-meta-on-a-new-rasberry-pi-step-by-step-for-total-beginners) for setting up meta, please skip "b)". The driver file "metaCore.json" was automatically downloaded to the sub folder "./active" of your meta installation.
+a) If you have followed the [instructions](https://github.com/jac459/meta#b---how-to-install-meta-on-a-new-rasberry-pi-step-by-step-for-total-beginners) for setting up meta, please skip b). The driver file "metaCore.json" was automatically downloaded to the sub folder "./active" of your meta installation.
 
 b) If you have a custom installation you can download the file manually with this command:\
 ```wget https://raw.githubusercontent.com/jac459/meta-core/main/metaCore.json -O ~/meta/active/metaCore.json```
