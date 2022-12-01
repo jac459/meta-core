@@ -84,11 +84,70 @@ As mentioned above MetaCore is a "virtual device" installed to a room (see image
 [add3.2]:https://user-images.githubusercontent.com/39094775/159338394-e72cbac1-a2b3-43b2-9a52-13e9492fc231.png
 [add3.3]:https://user-images.githubusercontent.com/39094775/159340136-81c38ead-6420-4399-822b-937545bc3f44.png
 
-#### Manage the "Driver Library" of meta 
-CHAPTER UNDER CONSTRUCTION
-- download/ update drivers created by the meta community to your system
-- activate/ deactivate drivers
-- reset drivers to factory default by deleting datastore files.
+#### Manage the "Driver Library" of meta
+The "Driver Library" can be used to manage drivers that are availabe to meta.
+
+##### How to download, activate and run a Community Driver and how to install a related Device to the NEEO Brain
+The "Driver Library" will show up a list of device drivers created by the community. These can be downloaded to your local meta system, so you can use them with your NEEO system. As an example these are instructions for managing (downloading, activating, updating) the driver "BLERC" by Nelus:
+
+1. Open up the "Driver Library" and select a driver. In this case "BLERC" by Nelus. Note, that at this stage, the subtile of the driver is: "Available for Download".
+2. The page displaying the options for this driver will pop up. The Header shows an icon, the name, the author and the driver version that is available for download.
+3. First have a look at "Click here for more info and readme". This will show up a short explanation of the driver and it will point to the readme, which contians more important info. It is highly recommended to look up the readme prior to making any further steps. For example the readme might contain info that additional hardware is necessary. For "BLERC" have a look at: github.com/jac459/Meta-Blerc.
+4. A driver can be downloaded to the local driver library by clicking "Download this Driver" (see image 2 below). After downloading, the same button will change to "Update this Driver" (see image 4 below), so an updated version can be downloaded later. (Or the same file can be downloaded again, if it was corrupted by the user.) Downloading a driver means, that it is "just" stored to the local library and sits there. For using a driver with you NEEO system it needs to be activated with the next steps (5-9).
+
+| 1.        | 2.        | 3.        | 4.        |
+|-----------|-----------|-----------|-----------|
+| ![add4.1] | ![add4.2] | ![add4.3] | ![add4.4] |
+
+5. Note: When a driver is available in the local library, the subtitle in the "Driver Library" will say: "Not active".
+6. Activating a driver is done by clicking "Activate Driver". This will move a copy of the driver from the local library (folder: "./library") to the place with all the activated drivers (folder: "./active").
+7. After clicking "Activate Driver", the status will change and subtitle in the "Driver Library" will say: ">>DRIVER ACTIVE<<". However one final step regarding meta is necessary.
+8. As a final step, meta needs to be restarted to check the (new) activated drivers and initialise/ run them. This can be done using metaCore by going to: Global Settings > restart meta (see details [here](https://github.com/jac459/meta-core#restart-meta)).
+9. (without image) After restarting meta, the driver will be made accessible to the NEEO brain. To finally install the device to you NEEO system, use the NEEO app or the web UI and go to "add device". Follow the instruction on the screen and the additional info provided in the related readme.
+
+| 5.        | 6.        | 7.        | 8.        |
+|-----------|-----------|-----------|-----------|
+| ![add4.5] | ![add4.6] | ![add4.7] | ![add4.8] |
+
+[add4.1]:https://user-images.githubusercontent.com/39094775/205027649-a604358e-a45b-4a11-bccf-25b7a803f3a3.png
+[add4.2]:https://user-images.githubusercontent.com/39094775/205027662-7f67d218-b5d0-4e27-9a35-833b95d85d84.png
+[add4.3]:https://user-images.githubusercontent.com/39094775/205027705-672da73e-35c9-437b-8b3d-3f2d740171d1.png
+[add4.4]:https://user-images.githubusercontent.com/39094775/205027728-3a94dfd8-d7c0-45c3-89ca-8e88f2d783a9.png
+[add4.5]:https://user-images.githubusercontent.com/39094775/205027755-ef0c296d-c3a3-45c6-9efb-1d60c654ed7e.png
+[add4.6]:https://user-images.githubusercontent.com/39094775/205027769-42865e2b-5288-4bed-b420-e36bdd271eb5.png
+[add4.7]:https://user-images.githubusercontent.com/39094775/205027784-8471d0ee-2e5c-4ce8-a49b-428a0b13df44.png
+[add4.8]:https://user-images.githubusercontent.com/39094775/205027776-50371dc1-5b46-409f-86e6-2b456086b9ba.png
+
+##### How to update a Community Driver
+Usually driver updates are announcement on the forum. The driver version available for download can be looked up in the header of the driver page in the "Driver Library" (see image 6 above). Note: This displayed version number is NOT the version installed in the system! The version number installed in the system can be looked up in the device info of the NEEO app.
+
+For updating a Driver:
+- Click "Update this Driver". This will download the latest version of the driver to the local file system. If this is an "active" driver, updating will place a copy in the folder "./active", as well as in the folder "./library".
+- As a last step meta need to be restarted. This can be done using metaCore by going to: Global Settings > restart meta (see details [here](https://github.com/jac459/meta-core#restart-meta)).
+- After restarting meta, the new version number will show up in the device info of the NEEO app.
+
+Note: Some driver updates may require uninstalling a device from the NEEO brain and reinstalling it to take effect. This information should be given on the announcement of the driver update.
+
+##### How to deactivate a Community Driver
+If a Driver for a Device is not needed anymore, it can be uninstalled and deactivated as follows:
+- Uninstall the device (all instances!) using the NEEO app or the web UI.
+- Using metaCore browse to the related driver and click "Deactivate Driver". This will remove the driver from the active devices (folder: "./active").
+- If the driver details in metaCore show the option to "Delete DataStore" this can also be executed (see details on "DataStore" [here](https://github.com/jac459/meta-core#option-delete-datastore)).
+- As a last step meta needs to be restarted. This can be done using metaCore by going to: Global Settings > restart meta (see details [here](https://github.com/jac459/meta-core#restart-meta)).
+
+Note: Deactivating a driver will not affect the local copy in the library (folder "./library"). So the driver will remain available for later usage. At the moment metaCore does not offer a way to remove the driver file from the local library.
+
+##### Option "Delete DataStore"
+Some drivers are using a "DataStore" to permanently store settings. For example some devices require entering an ip-adress when installing to the NEEO system and other smart drivers can remember additional setting by that. This information will be stored in the DataStore, which is an additional file that is stored next to the driver in the folder: "/.active".
+
+Attention: Drivers using a DataStore usually rely on it! Deleting the Datastore while a device is installed in your NEEO system can cause the driver to malfunction! Only delete the DataStore when it was recommended or after deactivating/ uninstalling the device!
+
+##### Some Background info on how the "Driver Library" works
+On the startup ("POWER ON") of the recipe, metaCore is downloading a lookup table of drivers created by the community. This is the "drivers.manifest". It contains several info on each driver, most importantly the download location, which usually is a github repo. But in theory the drivers.manifest can point to any location. If metaCore was able do download the latest drivers.manifest there will a confirmation for that, when opening the "Driver Library". The first line of the directory will say "Driver Library successfully updated!" (see image 1 above). Updating the "Driver Library" can also be triggered manually by: Global Settings > Update Driver Library (see details [here](https://github.com/jac459/meta-core#update-driver-library)).
+
+If there are localy developed custom drivers in the meta system (folders: "./library" or "./active"), that are not mentioned in the drivers.manifest, metaCore will merge them into the "Driver Library". But for obvious reasons the options will be limited to activating, deactivating and deleting the DataStore. There wont be any info in "Click here for more Info and readme" and obviously no option to download the localy developed driver.
+
+It may happen in some setups or situations, that the meta system has no connection to internet. So the latest drivers.manifest can not (or never) be downloaded (and metaCore wont be able to download drivers). In this case, the "Driver Library" will only contain the drivers in the local library of the meta system (folder: "./library"). However the "Driver Library" will be enriched with additional info from the existing/old drivers.manifest. So at least the location of the readme for a specific driver can be displayed in "Click here for more info and readme".
 
 #### Recipes
 The "Recipes" can be used to execute ALL actions of ALL devices installed on your NEEO system. This can be helpful to quickly test an action without adding a dedicated shortcut.
@@ -125,11 +184,10 @@ MetaCore will launch the following script in the background:\
 Meta must be restarted for the Update to take effect (refer to the option "Restart meta" which is described above).
 
 ##### Update Driver Library
-MetaCore will download the latest list of "easy to install" drivers from the meta community (drivers.manifest). After downloading the latest drivers.manifest metaCore will also check you local library folder, as well as the active folder to prepare information for the "Driver Library" (see above). Under normal circumstances this process is executed on each startup of metaCore and you dont need to ecxecute it manually. However for debugging it can be helpful to have this option. 
-The success of this process is confirmed with "Driver Library successfully updated!" in the first line of the "Driver Library".\
-Please keep in mind, that meta needs a connection to the internet to download the latest list.
+MetaCore will download the latest lookup table of "easy to install" drivers from the meta community (drivers.manifest). After downloading the latest drivers.manifest, metaCore will also check you local library folder, as well as the active folder and prepare information for the "Driver Library" (for more details see [above]([https://github.com/jac459/meta-core#some-background-info-on-how-the-driver-library-works)).\
+Under normal circumstances this process is executed on each startup of metaCore and you dont need to ecxecute it manually. However for debugging it can be helpful to have this option. 
 
-For advanced users: In some rare cases meta is set up in such a way that is not connected to the internet. In this case metaCore wont be able to download the latest drivers.manifest and also metaCore wont be able to download the listed drivers. However you can still make use of the "Driver Library" as the Library can show all your local driver files in "./library" and "./active". If your meta platform is permanently disconnected from the internet you can also go the extra step an remove the drivers.manifest from the root folder of meta. Doing this will cause the "Driver Library" to only list your local files.
+Note: Please keep in mind, that meta needs a connection to the internet to download the lookup table.
 
 ##### Restart Node-Red
 MetaCore will lauch the following command to restart your Node-Red instance:\
