@@ -1,6 +1,6 @@
 {
   "drivers": [
-      {
+    {
       "name": "BLERC",
       "author": "Nelus",
       "description": "Control Devices via simulated Bluetooth Keyboard (e.g. Nvidia Shield). Additional Hardware (ESP32) needed! | Readme: github.com/jac459/Meta-Blerc",
