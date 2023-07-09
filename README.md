@@ -1,3 +1,6 @@
+## Attention:
+at the moment this readme still describes version 4 of metaCore. The changes regarding version 5 (especially in the section ["Global Settings"](https://github.com/jac459/meta-core/edit/main/README.md#global-settings)) still have to be incorporated. In the meantime, the changes can be found in the [changelog of Version 5](https://github.com/jac459/meta-core/commit/6a04a55a672c8c816bbf189b18b745a30aef2ae1). 
+
 # metaCore
 MetaCore can be used to manage the meta platform from the UI of the NEEO remote.
 
