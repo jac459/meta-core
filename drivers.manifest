@@ -5,8 +5,8 @@
       "author": "Tom&Jac",
       "description": "Control any NVidia Shield (or AndroidTV)",
       "version": 1,
-      "driverLocation": "https://raw.githubusercontent.com/jac459/Meta-Shield/main/Shield.json",
-      "iconLocation":   "https://raw.githubusercontent.com/jac459/Meta-Shield/main/icon/Shield.jpg"
+      "driverLocation": "https://raw.githubusercontent.com/jac459/meta-shield/main/shield.json",
+      "iconLocation":   "https://raw.githubusercontent.com/jac459/meta-shield/main/pics/shield.jpg"
     },
     {
       "name": "BLERC",
