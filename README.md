@@ -222,3 +222,12 @@ Some drivers for meta rely on [mDNS](https://en.wikipedia.org/wiki/Multicast_DNS
   - previously: new driver file was only downloaded to the folder "./library"
   - now: new driver file is additionally copied to folder "./actice" when driver is activated
 - Other minor Bugfixes
+
+ #### Version 5 (MarkusM)
+- Changed location of the file driver.manifest. This is the library with drivers created by the community. If you are running metaCore in a previous Version (Version 4 or lower) and you go to "Library" you are suggested to update metaCore. (Canged location from: github.com/jac459/meta - to: github.com/jac459/meta-core; driver.manifest)
+- "Global Settings": 
+   - Restarting the processes meta, mode-red and moquitto and updating meta was rearranged: For safety reasons the execution of each of these commands was moved to a sub directory.
+   - New Option "Disable logging in pm2": By default all pm2 processes restarted from metaCore are now running without logging. This decision was made to reduce wear of the sd card. However, logging can be re-enabled from metaCore if required. (For developers: pm2 restart <process_id> -o "/dev/null" -e "/dev/null")
+   - New Feature "Delete pm2 logs": Under certain circumstances, the log files of pm2 can take up a lot of storage space over a longer period of time. This option allows you to delete the log files of the individual processes. (For developers: pm2 flush <process_id>)
+   - Removed the feature to manually "Update Driver Library". This is not needed as this is executed on each start of metaCore.
+- Other minor Bugfixes
