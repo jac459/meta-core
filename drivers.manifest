@@ -1,14 +1,6 @@
 {
   "drivers": [
     {
-      "name": "Shield",
-      "author": "Tom&Jac",
-      "description": "Control any NVidia Shield (or AndroidTV)",
-      "version": 1,
-      "driverLocation": "https://raw.githubusercontent.com/jac459/meta-shield/main/shield.json",
-      "iconLocation":   "https://raw.githubusercontent.com/jac459/meta-shield/main/pics/shield.jpg"
-    },
-    {
       "name": "BLERC",
       "author": "Nelus",
       "description": "Control Devices via simulated Bluetooth Keyboard (e.g. Nvidia Shield). Additional Hardware (ESP32) needed! | Readme: github.com/jac459/Meta-Blerc",
@@ -105,6 +97,14 @@
       "iconLocation":   "https://raw.githubusercontent.com/jac459/meta-roon/main/pics/roon.jpg"
     },
     {
+      "name": "Samsung smartTV (2016+)",
+      "author": "MarkusM",
+      "description": "Control your Samsung smartTV (2016+) | Readme: github.com/MarkusMas/meta-samsung-smartTV",
+      "version": 1,
+      "driverLocation": "https://raw.githubusercontent.com/MarkusMas/meta-samsung-smartTV/main/samsung-smartTV.json",
+      "iconLocation":   "https://raw.githubusercontent.com/MarkusMas/meta-samsung-smartTV/main/icons/samsung-smartTV.png"
+    },
+    {
       "name": "Shelly 1 / 1PM / 1L",
       "author": "vistalba",
       "description": "Control your Shelly 1 / 1PM / 1L. | Readme: github.com/vistalba/meta-shelly-driver",
@@ -127,6 +127,14 @@
       "version": 2,
       "driverLocation": "https://raw.githubusercontent.com/vistalba/meta-shelly-driver/main/shelly-shsw-25-roller.json",
       "iconLocation":   "https://raw.githubusercontent.com/vistalba/meta-shelly-driver/main/icons/shelly.jpg"
+    },
+    {
+      "name": "Shield",
+      "author": "Tom&Jac",
+      "description": "Control any NVidia Shield (or AndroidTV)",
+      "version": 1,
+      "driverLocation": "https://raw.githubusercontent.com/jac459/meta-shield/main/shield.json",
+      "iconLocation":   "https://raw.githubusercontent.com/jac459/meta-shield/main/pics/shield.jpg"
     },
     {
       "name": "Sony Bravia TV",
