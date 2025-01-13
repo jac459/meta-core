@@ -2,7 +2,7 @@
 {   "name":"metaCore",
     "manufacturer":"JAC459",
     "type":"MUSICPLAYER",
-    "version":5,
+    "version":6,
     "variables":{
         "ToInitiate":false
     },
@@ -170,6 +170,12 @@
                 }
             ]},
             "Manage":{"label":"Manage the Meta","commandset": [{
+                "type":"static", "command":".", "queryresult":"$.*",
+                "itemimage": "$IconBaseUrl/updateMeta.jpg",
+                "itemname":  "Update meta",
+                "itemlabel": "Download latest Release",
+                "evalnext":[{"test":true, "then":"Update meta", "or":""}]
+                },{
                 "type":"static", "command":".", "queryresult":"$.",
                 "itemimage": "$IconBaseUrl/meta.jpg",
                 "itemname":  "Restart meta",
@@ -187,12 +193,6 @@
                 "itemname":  "Restart MQTT",
                 "itemlabel": "Restart the Mosquitto instance",																														
                 "evalnext":[{"test":true, "then":"Restart Mosquitto", "or":""}]
-                },{
-                "type":"static", "command":".", "queryresult":"$.*",
-                "itemimage": "$IconBaseUrl/updateMeta.jpg",
-                "itemname":  "Update meta",
-                "itemlabel": "Download latest Release",
-                "evalnext":[{"test":true, "then":"Update meta", "or":""}]
                 },{
                 "type":"static", "command":".", "queryresult":"$.*",
                 "itemimage": "$IconBaseUrl/scans.jpg",
