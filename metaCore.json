@@ -2,7 +2,7 @@
 {   "name":"metaCore",
     "manufacturer":"JAC459",
     "type":"MUSICPLAYER",
-    "version":6,
+    "version":7,
     "variables":{
         "ToInitiate":false
     },
@@ -31,7 +31,10 @@
         "TriggerKey":"",
         "CurrentNetworkDevice":"",
         "LibraryUpdated":false,
-        "pm2Process":""
+        "pm2Process":"",
+        "LocalMetaVersion":"",
+        "LatestMetaVersion":"",
+        "UpdateMetaExecuted":false
     },
     "persistedvariables":{
         "pm2DisableLoggingMeta":true,
@@ -49,7 +52,9 @@
         "__ENRICHLIBRARY3": {"type":"static", "command":"$LibraryDrivers","queryresult": "", "evalwrite":[{"variable":"LibraryDrivers", "value":"DYNAMIK let ld = $LibraryDrivers; if (ld != undefined) { ld.forEach((d) => { let t = d.driverLocation.split(\"\/\"); let u = t[t.length-1].split(\".json\")[0]; d.filename = u;if ($LocalLibraryDrivers.findIndex((ad)=>{return ad == u})>=0) {d.library = true} else {d.library = false}}) }; JSON.stringify(ld);"}], "evaldo":[{"test":true,"then":"__ENRICHLIBRARY4"}]},
         "__ENRICHLIBRARY4": {"type":"static", "command":"$LibraryDrivers","queryresult": "", "evalwrite":[{"variable":"LibraryDrivers", "value":"DYNAMIK let ld = $LibraryDrivers; ld == undefined ? ld=[] : ld; $ActiveDrivers.forEach((ad)      =>{if (ld.findIndex((driv) => {return driv.filename == ad})<0) {ld.push({\"name\":ad, \"author\":\"Unknown\",\"description\":\"No Description. This is a User defined Driver.\",\"version\":\"N/A\",\"driverLocation\":\"\",\"iconLocation\":\"$IconBaseUrl/device.jpg\",\"filename\":ad,\"library\":true,\"active\":true, \"IsUserDefined\":true})} }); JSON.stringify(ld)"}], "evaldo":[{"test":true,"then":"__ENRICHLIBRARY5"}]},
         "__ENRICHLIBRARY5": {"type":"static", "command":"$LibraryDrivers","queryresult": "", "evalwrite":[{"variable":"LibraryDrivers", "value":"DYNAMIK let ld = $LibraryDrivers; ld == undefined ? ld=[] : ld; $LocalLibraryDrivers.forEach((ad)=>{if (ld.findIndex((driv) => {return driv.filename == ad})<0) {ld.push({\"name\":ad, \"author\":\"Unknown\",\"description\":\"No Description. This is a User defined Driver.\",\"version\":\"N/A\",\"driverLocation\":\"\",\"iconLocation\":\"$IconBaseUrl/device.jpg\",\"filename\":ad,\"library\":true,\"active\":false,\"IsUserDefined\":true})} }); JSON.stringify(ld)"}], "evaldo":[{"test":true,"then":"__ENRICHLIBRARY6"}]},
-        "__ENRICHLIBRARY6": {"type":"static", "command":"$LibraryDrivers","queryresult": "", "evalwrite":[{"variable":"LibraryDrivers", "value":"DYNAMIK let ld = $LibraryDrivers; ld.forEach((d) => { let u = d.filename; if ($LibraryDataStore.findIndex((ds)=>{return ds.split(\"-DataStore\")[0] == u})>=0) {d.datastore = true} else {d.datastore=false}}); JSON.stringify(ld);"}]},
+        "__ENRICHLIBRARY6": {"type":"static", "command":"$LibraryDrivers","queryresult": "", "evalwrite":[{"variable":"LibraryDrivers", "value":"DYNAMIK let ld = $LibraryDrivers; ld.forEach((d) => { let u = d.filename; if ($LibraryDataStore.findIndex((ds)=>{return ds.split(\"-DataStore\")[0] == u})>=0) {d.datastore = true} else {d.datastore=false}}); JSON.stringify(ld);"}], "evaldo":[{"test":true,"then":"__GETLOCALMETAVERSION"}]},
+        "__GETLOCALMETAVERSION":  {"type":"cli", "command":"cat package.json || echo \"err\" ","queryresult": "", "evalwrite":[{"variable":"LocalMetaVersion",  "value":"DYNAMIK \"$Result\"==\"err\" ? undefined : JSON.parse(\"$Result\").version "}], "evaldo":[{"test":true,"then":"__GETLATESTMETAVERSION"}]},
+        "__GETLATESTMETAVERSION": {"type":"cli", "command":"wget -qO- https://raw.githubusercontent.com/jac459/meta/Release/package.json || echo \"err\" ","queryresult": "", "evalwrite":[{"variable":"LatestMetaVersion", "value":"DYNAMIK \"$Result\"==\"err\" ? undefined : JSON.parse(\"$Result\").version "}]},
         "POWER OFF": {"type":"static", "command":"."}
     },
     "directories":{
@@ -174,6 +179,7 @@
                 "itemimage": "$IconBaseUrl/updateMeta.jpg",
                 "itemname":  "Update meta",
                 "itemlabel": "Download latest Release",
+                "evalwrite":[{"variable":"UpdateMetaExecuted", "value":false}],
                 "evalnext":[{"test":true, "then":"Update meta", "or":""}]
                 },{
                 "type":"static", "command":".", "queryresult":"$.",
@@ -314,21 +320,28 @@
             ]},
             "Update meta":{"label":"Update meta","commandset": [{
                 "type":"static", "command":".",
-                "itemtype":"button",
-                "itemname":"Do you really want to update meta?",
-                "itemUI":true,
-                "itemaction":""
-                },{
-                "type":"static", "command":".", "queryresult":"$.",
-                "itemimage": "$IconBaseUrl/updateMeta.jpg",
-                "itemname":  "Update meta now!",
-                "itemlabel": "Download latest release of meta",
-                "itemaction":"UpdateMeta",
-                "itemUI" :   "reload"
+                "itemimage":"$IconBaseUrl/meta.jpg",
+                "itemname": "DYNAMIK \"Local Version: \"  + (\"$LocalMetaVersion\"  == \"\" ? \">>unable to read<<\" : \"$LocalMetaVersion\") ",
+                "itemlabel":"DYNAMIK \"Latest Version: \" + (\"$LatestMetaVersion\" == \"\" ? \">>unable to read<<\" : \"$LatestMetaVersion\") ",
+                "itemaction":"."
                 },{
                 "type":"static", "command":".",
                 "itemtype":"button",
-                "itemname":"You need to Restart meta after updating!",
+                "itemname":"DYNAMIK \"$LocalMetaVersion\"==\"\" ? \"Restart metaCore!\" : (\"$LocalMetaVersion\"==\"$LatestMetaVersion\" ? \"meta is up to date!\" : \"Do you really want to update meta?\") ",
+                "itemUI":true,
+                "itemaction":""
+                },{
+                "type":"static", "command":"DYNAMIK \"$LocalMetaVersion\"!=\"$LatestMetaVersion\" && \"$LocalMetaVersion\"!=\"\" ? \".\" :undefined ", "queryresult":"$.",
+                "itemimage": "$IconBaseUrl/updateMeta.jpg",
+                "itemname":  "DYNAMIK $UpdateMetaExecuted ? \"Updating meta was executed!\" : \"Update meta now!\" ",
+                "itemlabel": "DYNAMIK $UpdateMetaExecuted ? \"Please wait 2 min. Then restart...\" : \"Download latest release of meta\" ",
+                "itemaction":"DYNAMIK $UpdateMetaExecuted ? \".\" : \"UpdateMeta\" ",
+                "evalwrite":[{"variable":"UpdateMetaExecuted", "value":true}],
+                "itemUI" :   "reload"
+                },{
+                "type":"static", "command":"DYNAMIK \"$LocalMetaVersion\"!=\"$LatestMetaVersion\" && \"$LocalMetaVersion\"!=\"\" ? \".\" :undefined ",
+                "itemtype":"button",
+                "itemname":"Restart meta + metaCore after updating!",
                 "itemUI":true,
                 "itemaction":""
                 }
