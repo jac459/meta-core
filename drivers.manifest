@@ -132,7 +132,7 @@
       "name": "Shelly Plus 2PM (Mode: Switch)",
       "author": "MarkusM",
       "description": "Control your Shelly Plus 2PM (Mode: Switch). | Readme: github.com/MarkusMas/meta-shelly-gen2",
-      "version": 1,
+      "version": 2,
       "driverLocation": "https://raw.githubusercontent.com/MarkusMas/meta-shelly-gen2/main/shelly-plus-2pm_switch.json",
       "iconLocation":   "https://raw.githubusercontent.com/MarkusMas/meta-shelly-gen2/main/icons/shelly.png"
     },
