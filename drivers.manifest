@@ -100,7 +100,7 @@
       "name": "Samsung smartTV (2016+)",
       "author": "MarkusM",
       "description": "Control your Samsung smartTV (2016+) | Readme: github.com/ MarkusMas/meta-samsung-smartTV",
-      "version": 5,
+      "version": 6,
       "driverLocation": "https://raw.githubusercontent.com/MarkusMas/meta-samsung-smartTV/main/samsung-smartTV.json",
       "iconLocation":   "https://raw.githubusercontent.com/MarkusMas/meta-samsung-smartTV/main/icons/samsung-smartTV.png"
     },
@@ -180,7 +180,7 @@
       "name": "Yamaha MusicCast",
       "author": "MarkusM",
       "description": "Full control of Yamaha AVRs and Musiccast. | Readme: github.com/jac459/yamaha-musiccast",
-      "version": 17,
+      "version": 18,
       "driverLocation": "https://raw.githubusercontent.com/jac459/yamaha-musiccast/main/yamaha-musiccast.json",
       "iconLocation":   "https://raw.githubusercontent.com/jac459/yamaha-musiccast/main/icons/yamaha_mc.png"
     },
