@@ -212,7 +212,7 @@
       "name": "Govee Light",
       "author": "ichrui",
       "description": "Control your Govee smart lights (power, brightness, color) via the official Govee Cloud API. | Readme: github.com/ichrui/NeeoGoveeDriver",
-      "version": 1,
+      "version": 2,
       "driverLocation": "https://raw.githubusercontent.com/ichrui/NeeoGoveeDriver/main/goveeLight.json",
       "iconLocation":   "https://raw.githubusercontent.com/ichrui/NeeoGoveeDriver/main/Icons/GoveeLight.png"
     }
